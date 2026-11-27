@@ -1,10 +1,73 @@
-# AeroSentry on a Windows laptop
+# AeroSentry (Windows)
 
-Everything runs on ONE laptop. The web app opens on that same laptop (`http://localhost:5173`).
-A phone camera connects over the local Wi-Fi.
+Drone based house wall monitoring system: fixed cameras watch a wall, a model detects a person climbing it, and the
+system raises an alert with the wall cell. Everything runs on ONE laptop and, after the first setup, needs no internet.
+(The drone part is not built yet.)
 
 **Status:** this code was prepared and tested on a Mac. It has **not been run on Windows yet**. Follow
-"Check it" at the end before you rely on it.
+"Check it" before you rely on it.
+
+## Quick start
+
+You need: the conda environment **`cv_env`**, **.NET 11 SDK**, **Node.js**, **SQL Server** and Git (details below).
+
+```
+git clone https://github.com/hamza-core/aerosentry-windows.git C:\AeroSentry
+cd C:\AeroSentry
+start.bat
+```
+
+Then open <http://localhost:5173>, in Chrome or Edge, and register an account.
+
+## Run the full system: one command
+
+```
+start.bat
+```
+
+(or double-click it). It does, in order:
+
+1. **first use only:** setup (needs internet; see "What setup does"),
+2. creates or updates the database,
+3. starts the model, backend, video server, face service, web app and camera worker.
+
+Wait for "AeroSentry is running". Keep the window open. **Ctrl+C stops everything** (do this before closing the window).
+Messages of the camera worker appear in the window; the other services write to the `logs` folder.
+
+## Run the services separately
+
+Use this to see one service's messages, or to restart only that one. **Do not run `start.bat` at the same time.**
+Run `setup.bat` and `db.bat` once first. Then open each in its **own window** (double-click, or from a terminal), in
+this order, waiting for "ready" before the next:
+
+| Order | Command | Service | Address | Needed for |
+|---|---|---|---|---|
+| 1 | `services\model.bat` | wall-crossing model | `localhost:8010` | detection, `check.bat` |
+| 2 | `services\backend.bat` | ASP.NET Core API | `localhost:5078` (API page: `/scalar`) | everything |
+| 3 | `services\media.bat` | video server | `localhost:8554`, `8888`, `8889` | `.sdp` / RTSP cameras |
+| 4 | `services\face.bat` | face recognition | `localhost:8020` | authorized people |
+| 5 | `services\web.bat` | web app | <http://localhost:5173> | the screens |
+| 6 | `services\worker.bat` | camera worker | (no port) | sends camera pictures to the model |
+
+Ctrl+C in a window stops only that service. Examples: working on screens needs only **backend + web**;
+live detection needs **model + backend + web + worker** (add **media** for `.sdp` cameras).
+
+In an Anaconda Prompt with `cv_env` active you can also type `python aerosentry.py run backend` (or `model`,
+`media`, `face`, `web`, `worker`).
+
+## All commands
+
+| Command | What it does |
+|---|---|
+| `start.bat` | the full system (sets up on first use) |
+| `services\<name>.bat` | one service by itself |
+| `setup.bat` | setup again (for example after `git pull` brought new packages) |
+| `db.bat` | create or update the database only |
+| `demo.bat` | the full system with recorded footage as the camera |
+| `check.bat` / `check.bat --quick` | does detection behave on this laptop like in the tests? |
+| `camera-check.bat IP:8080 "wall name"` | is the camera placed like in the training videos? |
+
+After `git pull`: run `setup.bat` once, then `start.bat`.
 
 ## What is in the repository
 
@@ -17,6 +80,7 @@ A phone camera connects over the local Wi-Fi.
 | `tests/` | wall lines and reference results (no videos) |
 | `scripts/` | demo camera, detection check, camera-position check |
 | `*.bat`, `aerosentry.py` | setup and run |
+| `services/` | one `.bat` per service |
 
 Downloaded by setup, not in git: the face model (InsightFace buffalo_l, for non-commercial research use) and
 MediaMTX 1.21.4 (video server; its checksum is verified). No password, key or camera login is in the repository.
@@ -36,20 +100,16 @@ MediaMTX 1.21.4 (video server; its checksum is verified). No password, key or ca
 
 ## 2. Get the code
 
-Use a short path without spaces:
-
-```
-git clone https://github.com/hamza-core/aerosentry-windows.git C:\AeroSentry
-```
+See "Quick start". Use a short path without spaces.
 
 **Test videos** are not in the repository. They are needed only for `demo.bat` and `check.bat`. Use your own copy
 of the dataset: the first time, those two ask for the path of your `dataset\test` folder (the one that contains
 `Wall crossing` and `Normal class`) and remember it in `local\videos-folder.txt` (delete that file to change it).
 `check.bat` compares results by file name, so your copy must be the same dataset.
 
-## 3. Set up (needs internet)
+## 3. What setup does (needs internet)
 
-Double-click **`setup.bat`**. It activates `cv_env`, then:
+`start.bat` runs it on first use; you can also double-click **`setup.bat`**. It activates `cv_env`, then:
 
 1. installs **only the Python packages `cv_env` does not have** (it does not replace your torch or numpy, and lists
    versions that differ from the tested ones),
@@ -75,7 +135,7 @@ Setup looks for the SQL Server installed on the laptop and writes a **Windows si
 Server=localhost\\SQLEXPRESS;Database=AeroSentry;Trusted_Connection=True;TrustServerCertificate=True
 ```
 
-Double-click **`db.bat`**. It creates the database `AeroSentry` and its tables. It starts **empty**: register a new
+`start.bat` (or `db.bat` alone) creates the database `AeroSentry` and its tables. It starts **empty**: register a new
 account in the web app.
 
 If it cannot connect, change only `DefaultConnection` in `appsettings.Local.json`. In JSON a backslash is written twice.
@@ -89,10 +149,7 @@ If it cannot connect, change only `DefaultConnection` in `appsettings.Local.json
 
 Check in **Services** that "SQL Server (...)" is running. To see the tables, connect with SSMS to the same server name.
 
-## 5. Run
-
-Double-click **`start.bat`**. When it says "AeroSentry is running", open <http://localhost:5173>.
-Keep the window open. Press **Ctrl+C** to stop everything (do this before closing the window).
+## 5. Using it
 
 **Watch the speed.** While a wall is on, the window prints lines like `sent 5.0/s`. It should stay near 5.
 The model looks at the last 60 pictures: when the laptop is slow, those cover a much longer time, one alarm can
@@ -117,7 +174,7 @@ Open "Live detection". Say clearly that this is recorded footage: it is not a li
 
 ## Check it (do this on every new laptop)
 
-1. **Detection:** run `start.bat`, then double-click **`check.bat`** in a second window. It replays the test videos and
+1. **Detection:** run `start.bat` (or only `services\model.bat`), then double-click **`check.bat`** in a second window. It replays the test videos and
    prints: climbs detected, false alarms, which videos differ from the reference, and the speed.
    Do not have a camera wall switched on while it runs. For a shorter run: `check.bat --quick`.
    - Detection is only comparable if the speed line stays **under 200 ms** a picture.
@@ -147,7 +204,7 @@ Each service writes a log in `logs\`.
 |---|---|
 | "... was not found" | install it, then open a **new** window |
 | "ports are already in use" | AeroSentry is already running: stop it, or restart the laptop |
-| `db.bat` cannot connect | step 4 |
+| the database step fails | section 4 |
 | backend ended while starting | read `logs\backend.log`; usually the database is not running or the text is wrong |
 | model ended while starting | read `logs\model.log`; check the Visual C++ Redistributable, and that `setup.bat` finished in `cv_env` |
 | `.sdp` camera shows no video | read `logs\media-server.log` |

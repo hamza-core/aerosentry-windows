@@ -1,9 +1,10 @@
 """AeroSentry: set up and run the whole project on one computer.
 
+    start    THE ONE COMMAND: setup on first use, database update, then everything. Ctrl+C stops everything.
+    run X    one service by itself in this window: model, backend, media, face, web or worker
     setup    once, inside the conda environment cv_env: missing Python packages, face model, video server,
              web and backend packages, settings file (SQL Server connection + NEW random keys)
     db       once (and after a database change): create / update the database tables
-    start    run everything. Keep the window open. Ctrl+C stops everything.
     demo     run everything with RECORDED climbing footage as the camera (no phone, nobody climbing)
     check    replay the test videos through the running model and compare with the reference run
 
@@ -61,7 +62,7 @@ def run(command, cwd=ROOT, env=None):
 def tool(name):
     path = shutil.which(name)
     if not path:
-        stop_with("'%s' was not found. Install it (see README-WINDOWS.md), close this window, open a new one." % name)
+        stop_with("'%s' was not found. Install it (see README.md), close this window, open a new one." % name)
     return path
 
 
@@ -148,7 +149,7 @@ def python_packages():
                  if installed_version(n) and installed_version(n).split("+")[0] != v]
     if different:
         say("\nNOTE: some versions differ from the tested ones. They were left as they are:\n  " + "\n  ".join(different)
-            + "\nRun check.bat (see README-WINDOWS.md) to see that detection gives the same results.")
+            + "\nRun check.bat (see README.md) to see that detection gives the same results.")
 
 
 def face_model():
@@ -215,8 +216,8 @@ def setup():
     run([dotnet, "build", "--no-restore"], cwd=API_DIR)
     say("\n[6/6] Settings and database connection")
     make_settings()
-    say("\nSetup finished. NEXT:\n  1. Run db.bat (creates the database and its tables)\n  2. Run start.bat\n"
-        "If db.bat cannot reach SQL Server, change DefaultConnection in\n  %s" % SETTINGS)
+    say("\nSetup finished. start.bat creates the database and runs everything.\n"
+        "If SQL Server cannot be reached, change DefaultConnection in\n  %s" % SETTINGS)
 
 
 def read_settings():
@@ -240,7 +241,7 @@ def database():
     say("> " + " ".join(command))
     if subprocess.run(command, cwd=str(API_DIR), env=dict(os.environ, ASPNETCORE_ENVIRONMENT="Development")).returncode != 0:
         stop_with("the database step failed. Check that SQL Server is running, and that DefaultConnection in\n  %s\n"
-                  "names it (README-WINDOWS.md, 'Database')." % SETTINGS)
+                  "names it (README.md, 'Database')." % SETTINGS)
     say("\nThe database is ready.")
 
 
@@ -325,75 +326,150 @@ class Services:
         self.running = []
 
 
-def start_services(services, demo=False):
-    settings = read_settings()
-    if not (WEB / "node_modules").is_dir() or importlib.util.find_spec("ultralytics") is None:
-        stop_with("run setup first (and check that cv_env is the active environment).")
-    needed = ["model", "backend", "face", "web", "rtsp", "hls", "webrtc"] + (["camera"] if demo else [])
-    busy = [str(P[n]) for n in needed if port_busy(P[n])]
-    if busy:
-        stop_with("these ports are already in use: %s. Is AeroSentry already running? Close it (or restart the computer)." % ", ".join(busy))
+# The services, in the order they start. "start" runs them all; "run <name>" runs one by itself.
+SERVICES = ["model", "backend", "media", "face", "web", "worker"]
+PORTS_OF = {"model": ["model"], "backend": ["backend"], "media": ["rtsp", "hls", "webrtc"], "face": ["face"], "web": ["web"], "worker": []}
 
-    media_config = LOCAL / "mediamtx.yml"            # the backend writes the cameras into it (it can hold camera logins)
+
+def media_program():
+    return Path(os.environ.get("AERO_MEDIAMTX", str(ROOT / "media" / ("mediamtx.exe" if WINDOWS else "mediamtx"))))
+
+
+def media_config():
+    """The video server's camera list. The backend writes the cameras into it (it can hold camera logins)."""
+    path = LOCAL / "mediamtx.yml"
     LOCAL.mkdir(exist_ok=True)
-    if not media_config.exists():
-        media_config.write_text("paths:\n  {}\n", encoding="utf-8")
-    base = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUNBUFFERED="1", YOLO_OFFLINE="True", YOLO_AUTOINSTALL="False")
+    if not path.exists():
+        path.write_text("paths:\n  {}\n", encoding="utf-8")
+    return path
 
-    services.start("model", [PY, "-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", P["model"]], ROOT / "model" / "backend", base,
-                   lambda: answers(URL["model"] + "/api/health", "healthy"), 180)
 
-    backend_env = dict(base, ASPNETCORE_ENVIRONMENT="Development", Ml__BaseUrl=URL["model"], Face__BaseUrl=URL["face"],
-                       Media__MtxManageConfig="true", Media__MtxConfigPath=str(media_config), Media__HlsBase=URL["hls"],
-                       Media__RtspBase="rtsp://localhost:%d" % P["rtsp"], Cors__Origins__0=URL["web"], Cors__Origins__1=URL["web"])
-    services.start("backend", [tool("dotnet"), "run", "--no-launch-profile", "--urls", URL["backend"]], API_DIR, backend_env,
-                   lambda: port_busy(P["backend"]), 300)
+def base_env():
+    return dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONUNBUFFERED="1", YOLO_OFFLINE="True", YOLO_AUTOINSTALL="False")
 
-    media_env = dict(base, MTX_RTSPADDRESS="127.0.0.1:%d" % P["rtsp"], MTX_HLSADDRESS="127.0.0.1:%d" % P["hls"], MTX_RTSPTRANSPORTS="tcp",
-                     MTX_RTMP="no", MTX_SRT="no", MTX_MOQ="no", MTX_HLSVARIANT="fmp4", MTX_WEBRTC="yes",
-                     MTX_WEBRTCADDRESS="127.0.0.1:%d" % P["webrtc"], MTX_WEBRTCLOCALUDPADDRESS="127.0.0.1:%d" % P["webrtc_media"],
-                     MTX_WEBRTCLOCALTCPADDRESS="127.0.0.1:%d" % P["webrtc_media"], MTX_WEBRTCIPSFROMINTERFACES="no",
-                     MTX_WEBRTCADDITIONALHOSTS="127.0.0.1", MTX_WEBRTCALLOWORIGINS=URL["web"])
-    media = Path(os.environ.get("AERO_MEDIAMTX", str(ROOT / "media" / ("mediamtx.exe" if WINDOWS else "mediamtx"))))
-    if media.exists():
-        services.start("media server", [media, media_config], LOCAL, media_env, lambda: port_busy(P["hls"]), 30)
-    else:
-        say("media server not found: .sdp / RTSP cameras will not show. /video cameras still work.")
 
-    services.start("face service", [PY, "-m", "uvicorn", "app:app", "--host", "127.0.0.1", "--port", P["face"]], ROOT / "backend" / "face-service", base,
-                   lambda: answers(URL["face"] + "/api/health", "healthy"), 180)
+def service(name):
+    """How to start ONE service: its title, command, folder, settings, how to see it is ready, and how long to wait."""
+    base = base_env()
+    if name == "model":
+        return dict(name="model", command=[PY, "-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", P["model"]],
+                    cwd=ROOT / "model" / "backend", env=base, ready=lambda: answers(URL["model"] + "/api/health", "healthy"), seconds=180)
+    if name == "backend":
+        env = dict(base, ASPNETCORE_ENVIRONMENT="Development", Ml__BaseUrl=URL["model"], Face__BaseUrl=URL["face"],
+                   Media__MtxManageConfig="true", Media__MtxConfigPath=str(media_config()), Media__HlsBase=URL["hls"],
+                   Media__RtspBase="rtsp://localhost:%d" % P["rtsp"], Cors__Origins__0=URL["web"], Cors__Origins__1=URL["web"])
+        return dict(name="backend", command=[tool("dotnet"), "run", "--no-launch-profile", "--urls", URL["backend"]],
+                    cwd=API_DIR, env=env, ready=lambda: port_busy(P["backend"]), seconds=300)
+    if name == "media":
+        env = dict(base, MTX_RTSPADDRESS="127.0.0.1:%d" % P["rtsp"], MTX_HLSADDRESS="127.0.0.1:%d" % P["hls"], MTX_RTSPTRANSPORTS="tcp",
+                   MTX_RTMP="no", MTX_SRT="no", MTX_MOQ="no", MTX_HLSVARIANT="fmp4", MTX_WEBRTC="yes",
+                   MTX_WEBRTCADDRESS="127.0.0.1:%d" % P["webrtc"], MTX_WEBRTCLOCALUDPADDRESS="127.0.0.1:%d" % P["webrtc_media"],
+                   MTX_WEBRTCLOCALTCPADDRESS="127.0.0.1:%d" % P["webrtc_media"], MTX_WEBRTCIPSFROMINTERFACES="no",
+                   MTX_WEBRTCADDITIONALHOSTS="127.0.0.1", MTX_WEBRTCALLOWORIGINS=URL["web"])
+        return dict(name="media server", command=[media_program(), media_config()], cwd=LOCAL, env=env,
+                    ready=lambda: port_busy(P["hls"]), seconds=30)
+    if name == "face":
+        return dict(name="face service", command=[PY, "-m", "uvicorn", "app:app", "--host", "127.0.0.1", "--port", P["face"]],
+                    cwd=ROOT / "backend" / "face-service", env=base, ready=lambda: answers(URL["face"] + "/api/health", "healthy"), seconds=180)
+    if name == "web":
+        env = dict(base, VITE_API_URL=URL["backend"], VITE_WEBRTC_URL="http://localhost:%d" % P["webrtc"])
+        return dict(name="web app", command=[tool("node"), "node_modules/vite/bin/vite.js", "--port", P["web"], "--strictPort"],
+                    cwd=WEB, env=env, ready=lambda: port_busy(P["web"]), seconds=90)
+    if name == "worker":
+        env = dict(base, WORKER_KEY=read_settings()["Worker"]["ApiKey"])
+        return dict(name="camera worker", command=[PY, ROOT / "backend" / "ingest-worker" / "worker.py", "--sample-rate", "5", "--backend", URL["backend"]],
+                    cwd=ROOT, env=env, ready=None, seconds=5)
+    raise ValueError(name)
 
-    web_env = dict(base, VITE_API_URL=URL["backend"], VITE_WEBRTC_URL="http://localhost:%d" % P["webrtc"])
-    services.start("web app", [tool("node"), "node_modules/vite/bin/vite.js", "--port", P["web"], "--strictPort"], WEB, web_env,
-                   lambda: port_busy(P["web"]), 90)
-    return settings, base
+
+def is_set_up():
+    return SETTINGS.exists() and EF.exists() and (WEB / "node_modules").is_dir()
+
+
+def check_ready_to_run(port_names):
+    read_settings()
+    if not is_set_up() or importlib.util.find_spec("ultralytics") is None:
+        stop_with("run setup first (and check that cv_env is the active environment).")
+    check_ports(port_names)
+
+
+def check_ports(port_names):
+    busy = [str(P[n]) for n in port_names if port_busy(P[n])]
+    if busy:
+        stop_with("these ports are already in use: %s. Is it already running? Close it (or restart the computer)." % ", ".join(busy))
+
+
+def all_ports(demo):
+    return [port for name in SERVICES for port in PORTS_OF[name]] + (["camera"] if demo else [])
+
+
+def start_services(services, demo=False):
+    """Everything except the camera worker, which comes last because it prints in this window."""
+    check_ready_to_run(all_ports(demo))
+    for name in SERVICES[:-1]:
+        if name == "media" and not media_program().exists():
+            say("media server not found: .sdp / RTSP cameras will not show. /video cameras still work.")
+            continue
+        services.start(**service(name))
+
+
+def wait_while_running(services):
+    while True:
+        for name, process in services.running:
+            if process.poll() is not None:
+                stop_with("%s stopped. See its messages above or in the logs folder." % name)
+        time.sleep(2)
+
+
+def run_one(name):
+    check_ready_to_run(PORTS_OF[name])
+    if name == "media" and not media_program().exists():
+        stop_with("the video server is missing: run setup.bat.")
+    if name == "worker" and not port_busy(P["backend"]):
+        say("NOTE: the backend is not running yet. The worker keeps asking until it is.")
+    services = Services()
+    try:
+        say("This window shows this service's own messages. Press Ctrl+C to stop it.")
+        services.start(**service(name), show=True)
+        wait_while_running(services)
+    except KeyboardInterrupt:
+        say("\nstopping ...")
+    finally:
+        if services.running:
+            services.stop_all()
+            say("%s is stopped." % name)
+
+
+def start_everything(demo=False):
+    """The one command: sets up on the first use, brings the database up to date, then runs the whole system."""
+    check_ports(all_ports(demo))                 # before anything else: a running copy would block the build
+    if demo:
+        need_test_videos()
+    if not is_set_up():
+        say("First use on this computer: running setup (needs internet) ...")
+        setup()
+    database()
+    run_all(demo)
 
 
 def run_all(demo=False):
-    if demo:
-        need_test_videos()
     services = Services()
     demo_command = [str(PY), str(ROOT / "scripts" / "demo_setup.py"), URL["backend"] + "/api/v1", str(P["camera"])]
     demo_ready = False
     try:
-        settings, base = start_services(services, demo)
+        start_services(services, demo)
+        base = base_env()
         if demo:
             say("preparing the recorded camera (about a minute) ...")
             services.start("demo camera", [PY, ROOT / "scripts" / "fake_camera.py", P["camera"]], ROOT, base, lambda: port_busy(P["camera"]), 400)
             run(demo_command, env=base)
             demo_ready = True
-        worker_env = dict(base, WORKER_KEY=settings["Worker"]["ApiKey"])
-        services.start("camera worker", [PY, ROOT / "backend" / "ingest-worker" / "worker.py", "--sample-rate", "5", "--backend", URL["backend"]],
-                       ROOT, worker_env, None, 5, show=True)
+        services.start(**service("worker"), show=True)
         say("\n==============================================================\n  AeroSentry is running.  Open  %s  in Chrome or Edge.\n"
             "  Keep this window open. Press Ctrl+C to stop everything.\n  Logs of the other services are in the 'logs' folder.\n"
             "  While a wall is on, the worker prints its speed: it should show about 'sent 5.0/s'.\n"
             "==============================================================\n" % URL["web"])
-        while True:
-            for name, process in services.running:
-                if process.poll() is not None:
-                    stop_with("%s stopped. See its messages above or in the logs folder." % name)
-            time.sleep(2)
+        wait_while_running(services)
     except KeyboardInterrupt:
         say("\nstopping ...")
     finally:
@@ -407,14 +483,16 @@ def run_all(demo=False):
 def check():
     need_test_videos()
     if not answers(URL["model"] + "/api/health", "healthy"):
-        stop_with("the model is not running. Run start.bat first (in another window).")
+        stop_with("the model is not running. Run start.bat or services\\model.bat first (in another window).")
     run([PY, ROOT / "scripts" / "check_detection.py", URL["model"] + "/api/live"] + sys.argv[2:])
 
 
 if __name__ == "__main__":
-    actions = {"setup": setup, "db": database, "start": run_all, "demo": lambda: run_all(demo=True), "check": check}
-    if len(sys.argv) < 2 or sys.argv[1] not in actions:
-        stop_with("use:  python aerosentry.py  setup | db | start | demo | check")
+    actions = {"setup": setup, "db": database, "start": start_everything, "demo": lambda: start_everything(demo=True),
+               "check": check, "run": lambda: run_one(sys.argv[2])}
+    usage = "use:  python aerosentry.py  setup | db | start | demo | check | run <%s>" % " | ".join(SERVICES)
+    if len(sys.argv) < 2 or sys.argv[1] not in actions or (sys.argv[1] == "run" and (len(sys.argv) != 3 or sys.argv[2] not in SERVICES)):
+        stop_with(usage)
 
     def interrupted(*_):                      # closing the window / kill: stop the services too
         raise KeyboardInterrupt
