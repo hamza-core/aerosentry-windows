@@ -1,0 +1,590 @@
+{
+ "made_on": "the development Mac: same result per video on its Apple graphics chip and on its processor (CPU)",
+ "clips": [
+  {
+   "label": "crossing",
+   "clip": "1",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "2",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "3",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "4",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "5",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "6",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "7",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "8",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "9",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "10",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "11",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "12",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "14",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "15",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "17",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "19",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "20",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "21",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "22",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "23",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "25",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "26",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "28",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "30",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "31",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "32",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "33",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "34",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "35",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "36",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "37",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "38",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "39",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "40",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "41",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "42",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "43",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "44",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "45",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "46",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "47",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "48",
+   "alarm": false
+  },
+  {
+   "label": "crossing",
+   "clip": "49",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "50",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "52",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "53",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "54",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "55",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "56",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "57",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "58",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "59",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "60",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "61",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "62",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "63",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "64",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "65",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "66",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "67",
+   "alarm": true
+  },
+  {
+   "label": "crossing",
+   "clip": "68",
+   "alarm": true
+  },
+  {
+   "label": "normal",
+   "clip": "1",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "2",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "4",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "5",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "7",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "8",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "9",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "10",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "12",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "13",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "14",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "17",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "18",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "19",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "20",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "21",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "22",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "24",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "25",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "26",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "27",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "28",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "29",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "30",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "32",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "33",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "34",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "36",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "37",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "39",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "40",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "41",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "42",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "43",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "45",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "47",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "48",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "49",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "50",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "51",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "52",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "53",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "54",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "55",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "56",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "57",
+   "alarm": true
+  },
+  {
+   "label": "normal",
+   "clip": "58",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "59",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "61",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "62",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "63",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "64",
+   "alarm": true
+  },
+  {
+   "label": "normal",
+   "clip": "66",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "67",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "68",
+   "alarm": false
+  },
+  {
+   "label": "normal",
+   "clip": "69",
+   "alarm": false
+  }
+ ]
+}

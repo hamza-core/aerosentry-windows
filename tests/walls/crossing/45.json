@@ -1,0 +1,47 @@
+{
+    "annotation_version": 2,
+    "video": "dataset/test/Wall crossing/45.mp4",
+    "split": "test",
+    "class_name": "Wall crossing",
+    "video_id": "45",
+    "status": "annotated",
+    "frame_index": 74,
+    "frame_width": 1920,
+    "frame_height": 1080,
+    "frame_count": 148,
+    "fps": 25.0,
+    "wall_top_points": [
+        [
+            0.3575,
+            0.296296
+        ],
+        [
+            0.4825,
+            0.300741
+        ],
+        [
+            0.484167,
+            0.391111
+        ],
+        [
+            0.56,
+            0.66963
+        ]
+    ],
+    "wall_bottom_points": [
+        [
+            0.3525,
+            0.659259
+        ],
+        [
+            0.495,
+            0.691852
+        ],
+        [
+            0.5475,
+            0.882963
+        ]
+    ],
+    "reannotated": true,
+    "reannotated_at": "2026-11-10 09:06:17"
+}

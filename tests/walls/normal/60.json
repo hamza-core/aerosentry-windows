@@ -1,0 +1,17 @@
+{
+    "annotation_version": 2,
+    "video": "dataset/test/Normal class/60.mp4",
+    "split": "test",
+    "class_name": "Normal class",
+    "video_id": "60",
+    "status": "skipped",
+    "frame_index": 60,
+    "frame_width": 320,
+    "frame_height": 240,
+    "frame_count": 120,
+    "fps": 30.0,
+    "wall_top_points": [],
+    "wall_bottom_points": [],
+    "pose_only": true,
+    "pose_only_at": "2026-11-10 09:08:42"
+}

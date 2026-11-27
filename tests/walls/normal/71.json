@@ -1,0 +1,36 @@
+{
+    "annotation_version": 2,
+    "video": "dataset/test/Normal class/71.mp4",
+    "split": "test",
+    "class_name": "Normal class",
+    "video_id": "71",
+    "status": "skipped",
+    "frame_index": 28,
+    "frame_width": 1920,
+    "frame_height": 1080,
+    "frame_count": 57,
+    "fps": 25.0,
+    "wall_top_points": [
+        [
+            0.98749,
+            0.328234
+        ],
+        [
+            0.436278,
+            0.200278
+        ],
+        [
+            0.100078,
+            0.148818
+        ],
+        [
+            0.01251,
+            0.133519
+        ],
+        [
+            0.01251,
+            0.126565
+        ]
+    ],
+    "wall_bottom_points": []
+}

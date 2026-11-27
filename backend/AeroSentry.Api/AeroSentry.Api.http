@@ -1,0 +1,6 @@
+@AeroSentry.Api_HostAddress = http://localhost:5078
+
+GET {{AeroSentry.Api_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###

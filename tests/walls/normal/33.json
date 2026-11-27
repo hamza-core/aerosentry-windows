@@ -1,0 +1,43 @@
+{
+    "annotation_version": 2,
+    "video": "dataset/test/Normal class/33.mp4",
+    "split": "test",
+    "class_name": "Normal class",
+    "video_id": "33",
+    "status": "annotated",
+    "frame_index": 58,
+    "frame_width": 1920,
+    "frame_height": 1080,
+    "frame_count": 116,
+    "fps": 25.0,
+    "wall_top_points": [
+        [
+            0.968333,
+            0.454815
+        ],
+        [
+            0.359167,
+            0.465185
+        ],
+        [
+            0.3525,
+            0.268148
+        ],
+        [
+            0.056667,
+            0.348148
+        ]
+    ],
+    "wall_bottom_points": [
+        [
+            0.075,
+            0.61037
+        ],
+        [
+            0.655833,
+            0.93037
+        ]
+    ],
+    "reannotated": true,
+    "reannotated_at": "2026-11-10 09:07:57"
+}

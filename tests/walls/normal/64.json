@@ -1,0 +1,35 @@
+{
+    "annotation_version": 2,
+    "video": "dataset/test/Normal class/64.mp4",
+    "split": "test",
+    "class_name": "Normal class",
+    "video_id": "64",
+    "status": "annotated",
+    "frame_index": 75,
+    "frame_width": 320,
+    "frame_height": 240,
+    "frame_count": 150,
+    "fps": 30.0,
+    "wall_top_points": [
+        [
+            0.421875,
+            0.3875
+        ],
+        [
+            0.509375,
+            0.5625
+        ]
+    ],
+    "wall_bottom_points": [
+        [
+            0.309375,
+            0.525
+        ],
+        [
+            0.35625,
+            0.720833
+        ]
+    ],
+    "reannotated": true,
+    "reannotated_at": "2026-11-09 19:02:49"
+}

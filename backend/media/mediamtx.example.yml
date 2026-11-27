@@ -1,0 +1,26 @@
+# MediaMTX config for AeroSentry (the media server between the cameras and everyone else).
+#
+#   cp media/mediamtx.example.yml media/mediamtx.yml      # then edit the copy; it holds camera passwords, so it is not in git
+#   mediamtx media/mediamtx.yml
+#
+# MediaMTX reloads this file by itself when it changes: adding a camera needs NO restart.
+# Leave the ports at their defaults (RTSP 8554, HLS 8888): the backend's Media:RtspBase and Media:HlsBase point there.
+# Only one MediaMTX can run per machine with these defaults (a second one clashes on the ports).
+
+logLevel: info
+
+paths:
+  # One block per camera. The NAME must be  cam-<cameraId>  where cameraId is the id from the API (cameras/list).
+  # The apps play   http://<server>:8888/cam-<cameraId>/index.m3u8   and the ingest worker reads   rtsp://localhost:8554/cam-<cameraId>.
+
+  # --- an IP Webcam phone (verified on "IP Webcam Server 0.4": video only, H.264, 640x480) ---
+  cam-00000000-0000-0000-0000-000000000000:
+    source: rtsp://192.168.0.107:8080/h264.sdp   # with audio: h264_ulaw.sdp. The plain /video address is MJPEG, MediaMTX cannot read it
+    rtspTransport: tcp                           # IMPORTANT: UDP loses packets over Wi-Fi, which breaks keyframes and stops HLS
+    sourceOnDemand: yes                          # only connect to the camera while somebody is watching or analysing
+
+  # --- a CCTV camera or an NVR channel (RTSP). The exact path depends on the brand: take it from the camera/NVR settings ---
+  # cam-11111111-1111-1111-1111-111111111111:
+  #   source: rtsp://admin:PASSWORD@192.168.0.50:554/Streaming/Channels/101
+  #   rtspTransport: tcp
+  #   sourceOnDemand: yes

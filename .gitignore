@@ -1,0 +1,24 @@
+# private, or made on each computer
+local/
+logs/
+tools/
+node_modules/
+**/bin/
+**/obj/
+appsettings.Local.json
+mediamtx.yml
+.env
+.env.local
+__pycache__/
+model/backend/uploads/
+.DS_Store
+
+# downloaded by setup
+media/mediamtx.exe
+media/LICENSE
+face-model/
+python/wheelhouse/
+
+# test videos are not part of the repository (team members already have them)
+*.mp4
+tests/clips/
